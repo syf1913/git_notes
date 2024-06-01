@@ -978,3 +978,67 @@ git checkout -- <file>
 - 撤回文件修改：`git restore <file>` 或 `git checkout -- <file>`
 
 选择合适的命令来撤回操作，可以帮助你有效管理和恢复 Git 仓库的状态。
+
+### 要为本地的某一分支设置远程某一分支，使其成为其上游分支，
+
+可以使用 `git branch --set-upstream-to` 或者 `git push -u` 命令。以下是详细的步骤：
+
+#### 使用 `git branch --set-upstream-to`
+
+1. **切换到本地分支**
+
+   首先，切换到你想要设置上游分支的本地分支。例如，如果你的本地分支是 `feature-branch`，你可以使用以下命令切换到该分支：
+
+   ```bash
+   git checkout feature-branch
+   ```
+
+2. **设置上游分支**
+
+   然后，使用 `git branch --set-upstream-to` 命令设置上游分支。例如，如果你想将远程仓库 `origin` 的 `remote-feature-branch` 分支设置为 `feature-branch` 的上游分支，使用以下命令：
+
+   ```bash
+   git branch --set-upstream-to=origin/remote-feature-branch
+   ```
+
+#### 使用 `git push -u`
+
+当你第一次推送本地分支到远程分支时，可以使用 `git push -u` 命令来同时设置上游分支：
+
+1. **切换到本地分支**
+
+   切换到你想要推送的本地分支：
+
+   ```bash
+   git checkout feature-branch
+   ```
+
+2. **推送并设置上游分支**
+
+   使用 `git push -u` 命令推送本地分支到远程分支，并设置上游分支。例如：
+
+   ```bash
+   git push -u origin remote-feature-branch
+   ```
+
+   这会将本地的 `feature-branch` 分支推送到远程的 `remote-feature-branch` 分支，并设置远程的 `remote-feature-branch` 作为上游分支。
+
+#### 验证上游分支设置
+
+要验证本地分支的上游分支设置，可以使用以下命令：
+
+```bash
+git branch -vv
+```
+
+这将列出所有本地分支及其追踪的上游分支。例如：
+
+```
+  feature-branch    1234567 [origin/remote-feature-branch] Commit message
+```
+
+这样，你就可以看到本地的 `feature-branch` 分支现在追踪的是远程的 `remote-feature-branch` 分支。
+
+#### 总结
+
+通过使用 `git branch --set-upstream-to` 或 `git push -u` 命令，你可以方便地为本地分支设置上游的远程分支。这将有助于简化以后的同步和合并操作。
