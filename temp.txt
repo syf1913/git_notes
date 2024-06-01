@@ -3,3 +3,5 @@ temp
 add one line.
 
 commit with no fast forward
+
+commit with no fast forward using config merge.ff no
