@@ -4,13 +4,15 @@
 
 ## 推荐学习地址
 
-[Git视频地址](https://www.bilibili.com/video/BV1r3411F7kn/?spm_id_from=333.337.search-card.all.click&vd_source=ef384a057062657211d40f7ef83336f7)
+[Git视频地址1](https://www.bilibili.com/video/BV1r3411F7kn/?spm_id_from=333.337.search-card.all.click&vd_source=ef384a057062657211d40f7ef83336f7)
+
+[Git视频地址2](https://www.bilibili.com/video/BV1p1421z7Hh/?spm_id_from=pageDriver&vd_source=ef384a057062657211d40f7ef83336f7)
 
 ## 笔记
 
 ### git flow
 
-![git flow](./git_flow.png)
+![git flow](./git_notes.assets/git_flow.png)
 
 **工作区** `add` **暂存区** `commit` **本地仓库(本地版本区)** `push` **远程仓库**
 
@@ -829,7 +831,7 @@ git for-each-ref --format='%(refname:short) %(upstream:short)' refs/heads/
 ```bash
 main origin/main
 feature origin/feature
-bugfix 
+bugfix
 ```
 
 这将列出所有本地分支及其对应的上游分支。如果本地分支没有上游分支，则会显示为空。
