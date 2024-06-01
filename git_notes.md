@@ -872,3 +872,8 @@ refs/heads/main
 #### 综上所述
 
 要查看本地分支追踪的远程上游分支，使用 `git branch -vv` 是最直观和便捷的方法，而 `git status` 则适用于查看当前分支的追踪情况。如果需要更详细的配置信息，可以使用 `git config` 命令。根据你的需求选择最合适的方法。
+
+
+### `git config --global core.editor`
+
+将`git`的默认编辑器修改为`vim`
