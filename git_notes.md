@@ -877,3 +877,104 @@ refs/heads/main
 ### `git config --global core.editor`
 
 将`git`的默认编辑器修改为`vim`
+
+### 要撤回最近一次的 Git 操作
+
+具体方法取决于你执行的操作类型。以下是一些常见操作及其对应的撤回方法：
+
+#### 1. 撤回最近一次的提交 (`git commit`)
+
+如果你想撤回最近一次的提交，可以使用以下命令：
+
+##### 软重置（保持工作目录和索引中的更改）
+
+这将取消最近一次的提交，但保留更改在工作目录中。
+
+```bash
+git reset --soft HEAD~1
+```
+
+##### 混合重置（保持工作目录中的更改，但取消暂存区中的更改）
+
+这将取消最近一次的提交，并且将更改移出暂存区。
+
+```bash
+git reset --mixed HEAD~1
+```
+
+#### 硬重置（删除所有更改）
+
+这将取消最近一次的提交，并且删除工作目录中的所有更改。请谨慎使用此命令，因为它会丢失所有未提交的更改。
+
+```bash
+git reset --hard HEAD~1
+```
+
+#### 2. 撤回最近一次的合并（`git merge`）
+
+如果你想撤回最近一次的合并，可以使用以下命令：
+
+```bash
+git reset --hard ORIG_HEAD
+```
+
+这个命令会将仓库恢复到合并之前的状态。
+
+#### 3. 撤回最近一次的变基（`git rebase`）
+
+如果你在变基过程中遇到问题并希望撤回，可以使用以下命令：
+
+```bash
+git rebase --abort
+```
+
+这个命令会中止变基过程并将分支恢复到变基开始之前的状态。
+
+#### 4. 撤回最近一次的拉取（`git pull`）
+
+如果最近一次的拉取包括合并或变基，你可以使用以下命令撤回：
+
+```bash
+git reset --hard ORIG_HEAD
+```
+
+这个命令会将仓库恢复到拉取之前的状态。
+
+#### 5. 撤回最近一次的添加到暂存区（`git add`）
+
+如果你将文件添加到暂存区，但还没有提交，可以使用以下命令撤回：
+
+```bash
+git reset HEAD <file>
+```
+
+这将取消暂存该文件的更改。
+
+#### 6. 撤回最近一次的文件修改（`git checkout` 或 `git restore`）
+
+如果你想撤回对文件的修改，可以使用以下命令：
+
+#### 使用 `git restore`
+
+```bash
+git restore <file>
+```
+
+#### 使用 `git checkout`（适用于旧版本）
+
+```bash
+git checkout -- <file>
+```
+
+#### 总结
+
+撤回最近一次的 Git 操作需要根据具体操作类型选择合适的命令。以下是一些常见情况的命令总结：
+
+- 撤回最近一次提交：`git reset --soft HEAD~1`
+- 撤回最近一次合并：`git reset --hard ORIG_HEAD`
+- 撤回最近一次变基：`git rebase --abort`
+- 撤回最近一次拉取：`git reset --hard ORIG_HEAD`
+- 撤回添加到暂存区：`git reset HEAD <file>`
+- 撤回文件修改：`git restore <file>` 或 `git checkout -- <file>`
+
+选择合适的命令来撤回操作，可以帮助你有效管理和恢复 Git 仓库的状态。
