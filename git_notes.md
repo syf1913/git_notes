@@ -1120,3 +1120,273 @@ git branch -vv
 #### 总结
 
 通过使用 `git branch --set-upstream-to` 或 `git push -u` 命令，你可以方便地为本地分支设置上游的远程分支。这将有助于简化以后的同步和合并操作。
+
+## `git stash`
+
+`git stash` 是 Git 中一个强大的命令，用于**临时保存工作目录和暂存区的修改**，让你可以快速切换分支或处理其他任务，而无需提交未完成的工作。以下是更全面的详解，包括常用场景、高级用法和注意事项：
+
+---
+
+### 一、核心功能
+- **保存未提交的修改**：将工作目录（已修改但未暂存的文件）和暂存区（已暂存但未提交的文件）的修改临时存储起来，恢复到一个干净的工作状态。
+- **不保存的文件**：
+  - 未跟踪的文件（Untracked files，默认不保存）。
+  - 被 `.gitignore` 忽略的文件（默认不保存）。
+
+---
+
+### 二、基础用法
+
+#### 1. 保存当前修改
+```bash
+git stash
+# 等价于：
+git stash push
+```
+- 默认存储名称为 `WIP on <branch>`（如 `WIP on main: 123abcd Fix bug`）。
+- 保存后，工作目录会恢复到最近一次提交的状态。
+
+#### 2. 保存时添加描述信息
+```bash
+git stash push -m "描述信息"
+# 示例：
+git stash push -m "保存实验性代码"
+```
+
+#### 3. 查看存储列表
+```bash
+git stash list
+```
+输出示例：
+```
+stash@{0}: On main: 保存实验性代码
+stash@{1}: WIP on dev: 123abcd Update styles
+```
+
+#### 4. 恢复存储
+- **恢复并删除存储**（推荐）：
+  ```bash
+  git stash pop          # 恢复最新的存储（stash@{0}）
+  git stash pop stash@{n} # 恢复指定存储
+  ```
+- **恢复但不删除存储**：
+  ```bash
+  git stash apply          # 恢复最新的存储
+  git stash apply stash@{n} # 恢复指定存储
+  ```
+
+#### 5. 删除存储
+```bash
+git stash drop          # 删除最新的存储
+git stash drop stash@{n} # 删除指定存储
+git stash clear         # 删除所有存储
+```
+
+---
+
+### 三、高级用法
+
+#### 1. 保存未跟踪的文件（Untracked files）
+```bash
+git stash -u    # --include-untracked
+git stash -a    # --all（包含未跟踪和忽略的文件，慎用！）
+```
+
+#### 2. 仅保存已暂存的修改（Staged changes）
+```bash
+git stash push --staged
+```
+
+#### 3. 选择性保存（交互模式）
+```bash
+git stash push -p  # --patch
+```
+- 进入交互界面，逐块选择要保存的修改。
+
+#### 4. 从存储创建分支
+```bash
+git stash branch <new-branch-name> stash@{n}
+```
+- 基于存储时的提交创建一个新分支，并自动恢复存储内容（适用于存储后原分支有重大变更的场景）。
+
+#### 5. 查看存储的差异
+```bash
+git stash show stash@{n}  # 查看简略差异
+git stash show -p stash@{n} # 查看完整差异
+```
+
+---
+
+### 四、常见场景
+
+#### 场景 1：临时切换分支
+```bash
+git stash       # 保存当前工作
+git checkout other-branch
+# 处理其他任务...
+git checkout original-branch
+git stash pop   # 恢复之前的修改
+```
+
+#### 场景 2：保存实验性代码
+```bash
+git stash push -m "实验性功能 A"
+# 继续开发其他功能...
+git stash list
+git stash apply stash@{0}  # 恢复实验性代码
+```
+
+#### 场景 3：解决冲突
+- 如果 `git stash pop` 或 `apply` 时发生冲突：
+  1. 手动解决冲突。
+  2. 使用 `git add` 标记冲突已解决。
+  3. 运行 `git stash drop`（如果用了 `pop`，冲突解决后会自动删除存储）。
+
+---
+
+### 五、注意事项
+1. **慎用 `git stash clear`**：会永久删除所有存储。
+2. **存储的时效性**：长期未处理的存储可能难以追溯用途，建议及时清理。
+3. **分支兼容性**：存储内容在不同分支恢复时可能引发冲突（尤其是文件结构变化时）。
+4. **未跟踪文件的风险**：使用 `-a` 会保存忽略的文件（如临时文件、编译产物等），可能导致存储臃肿。
+
+---
+
+### 六、总结
+- **核心命令**：
+  - `git stash` → 保存
+  - `git stash list` → 查看
+  - `git stash pop` → 恢复并删除
+  - `git stash apply` → 恢复不删除
+- **高级技巧**：
+  - 用 `-m` 添加描述，避免混淆多个存储。
+  - 使用 `-u` 或 `-a` 保存未跟踪文件。
+  - 通过 `git stash branch` 解决复杂场景。
+
+通过灵活使用 `git stash`，你可以更高效地管理未完成的工作，避免频繁提交半成品代码。
+
+
+为了使你的 `dev-temp` 分支与远端 `develop` 分支同步，同时保留所有本地修改（包括已暂存、未暂存和未跟踪的文件），按以下步骤操作：
+
+---
+
+## 在一个 git 仓库中，当前分支 dev-temp 是复制的 develop 分支， 并在这个分支上存在以暂存的修改，未暂存的更改，以及未追踪的新文件，当 远端仓库的 develop 分支有大的更新后，我如何使当前的 dev-temp 分支与 远端的develp 分支保持一致，并保留所有修改
+
+## DeepSeek
+
+### **1. 保存所有本地修改**
+使用 `git stash` 保存所有修改（包括未跟踪文件）：
+```bash
+git stash push -u -m "保存所有本地修改（暂存、未暂存、未跟踪文件）"
+# -u 或 --include-untracked：包含未跟踪文件
+# 若还有被忽略的文件需保存，改用 -a（慎用）
+```
+
+---
+
+### **2. 同步远端 develop 分支最新代码**
+将本地 `dev-temp` 分支强制对齐到远端 `develop` 分支：
+```bash
+git fetch origin develop       # 获取远端最新代码
+git reset --hard origin/develop  # 将 dev-temp 分支指向远端最新提交
+```
+
+---
+
+### **3. 重新应用本地修改**
+将暂存的修改重新应用到最新代码基础上：
+```bash
+git stash pop  # 恢复最新存储，并尝试自动合并
+```
+- **若发生冲突**：
+  1. 手动解决冲突（冲突文件会标记为 `Unmerged paths`）。
+  2. 使用 `git add <file>` 标记冲突已解决。
+  3. 继续完成 `git stash pop`（若冲突解决后仍有未合并文件，需重复此步骤）。
+
+---
+
+### **4. 验证未跟踪文件**
+未跟踪文件（如新创建的文件）会被 `git stash pop` 还原到工作目录，但需手动确认：
+```bash
+git status  # 检查未跟踪文件是否恢复
+```
+
+---
+
+### **5. 最终提交**
+将修改重新提交到分支：
+```bash
+git add .          # 添加所有修改（包括未跟踪文件）
+git commit -m "合并远端 develop 更新并保留本地修改"
+```
+
+---
+
+### **关键步骤总结**
+1. **保存**所有修改（`git stash -u`）。
+2. **强制对齐**分支到远端（`git reset --hard origin/develop`）。
+3. **恢复**修改并解决冲突（`git stash pop`）。
+4. **提交**最终结果。
+
+---
+
+### **注意事项**
+- **备份分支**：若 `dev-temp` 有重要历史提交，建议先创建备份分支：
+  ```bash
+  git branch dev-temp-backup  # 备份当前状态
+  ```
+- **强制推送**：若需将同步后的 `dev-temp` 推送到远端，需强制推送（慎用）：
+  ```bash
+  git push -f origin dev-temp
+  ```
+- **替代方案**：若需保留本地提交历史，改用 `git rebase`：
+  ```bash
+  git stash -u
+  git fetch origin develop
+  git rebase origin/develop  # 将本地提交变基到远端最新代码
+  git stash pop
+  ```
+
+通过此流程，你的 `dev-temp` 分支将完全同步远端 `develop`，同时保留所有本地修改。
+
+## ChatGPT:
+
+你可以按以下步骤操作：
+
+### 1. **确保工作区变更不会丢失**
+先将当前的所有修改存储起来：
+```sh
+git stash -u  # -u 也会包含未追踪的新文件
+```
+
+### 2. **切换到 develop 并更新**
+```sh
+git checkout develop
+git pull origin develop  # 拉取最新代码
+```
+
+### 3. **切回 dev-temp 并变基**
+```sh
+git checkout dev-temp
+git rebase develop
+```
+> 如果 rebase 过程中有冲突，按需解决后执行：
+> ```sh
+> git rebase --continue
+> ```
+> 若不想 rebase，可改用 `git merge develop`。
+
+### 4. **恢复你的修改**
+```sh
+git stash pop  # 取回之前存储的修改
+```
+> 可能还会有冲突，需要手动解决。
+
+### 5. **提交更改**
+如果恢复后工作区有未提交的修改：
+```sh
+git add .
+git commit -m "恢复本地修改"
+```
+
+这样，`dev-temp` 就和远程 `develop` 保持一致，并且你的所有改动都被保留。
